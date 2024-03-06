@@ -36,3 +36,5 @@ for epoch in range(10000):
 # Epoc : 8000, Weight : 0.879, Bias : -0.436, Cost : 1.372
 # Epoc : 9000, Weight : 0.879, Bias : -0.436, Cost : 1.372
 # Epoc : 10000, Weight : 0.879, Bias : -0.436, Cost : 1.372
+        
+# 하이퍼파라미터 값이 적절 한다면 더 많은 학습이 필요하지 않는다.
