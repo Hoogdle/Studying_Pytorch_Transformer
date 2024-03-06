@@ -38,6 +38,7 @@ for epoch in range(10000):
     hypothesis = x * weight + bias
     cost = torch.mean((hypothesis - y)**2)
 
+    ## 거의 한 세트 (optimizer 값 초기화 => 역전파 진행 => cost function의 파라미터를 업데이트)
     optimizer.zero_grad() #optimizer 변수에 포함시킨 매개변수의 기울기 0으로 초기화(텐서의 기울기는 누적해서 더해짐)
     cost.backward() #역전파 수행, optimizer 변수에 포함시킨 매개변수들의 기울기가 새롭게 계산(가중치와 편향에 대한 기울기 계산)
     optimizer.step() #역전파의 결과를 최적화 함수(cost fucntion)에 적용 (weight와 bias의 변화)
