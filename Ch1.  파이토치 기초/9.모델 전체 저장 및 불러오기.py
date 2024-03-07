@@ -74,7 +74,8 @@ class CustomMode(nn.Module):
 
 device = "cuda" if torch.cuda.is_available() else "cpu"
 model = torch.load("경로",map_location=device)
-print(model)
+print(model)  
+
 
 # CustoModel(
 #     (layer) : Linear(in_features=2,out_features=1,bias=True)
