@@ -16,6 +16,35 @@
 # 입력층에서의 Normalization을 해도 은닉층에서 각 파라미터를 거쳐서 나온 값의 범위는 각기 다르기에 다시 문제에 빠진다.
 # ICS(내부 공변량 변화) : 은닉층마다 입력되는 값의 분포가 달라지는 현상
 # FC(Fully Connected) => BN(Batch Normalization) => Activation Fuction 의 과정으로 진행
-# 위 사이트에서 배치 정규화 정리하는거 부터!
 
+### 배치 정규화 수행
+
+import torch
+from torch import  nn
+
+x = torch.FloatTensor(
+    [
+        [-0.6577,-0.5797,0.6360],
+        [0.7392,0.2145,1.523],
+        [0.2432,0.5662,0.3222]
+    ]
+)
+
+# tensor([[-1.3246, -1.3492, -0.3757],
+#         [ 1.0912,  0.3077,  1.3686],
+#         [ 0.2334,  1.0415, -0.9928]], grad_fn=<NativeBatchNormBackward0>)
+
+print(x.size())
+print(nn.BatchNorm1d(3)(x))
+
+
+### 배치 정규화 클래스
+
+# m = torch.nn.BatchNorm1d(
+#     num_features,
+#     eps = 1e-05
+# )
+
+# 1차원 배치 정규화 클래스는 특징 갯수(num_features)를 입력받아 배치 정규화 수행 (특징 갯수 == 텐서의 특징 개수 == 입력 데이터의 채널 수)
+# eps는 분모가 0이 되는 현상을 방지하는 작은 상수
 
