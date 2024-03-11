@@ -223,7 +223,7 @@
 # from PIL import Image
 # from torchvision import transforms
 
-# transforms = transforms.Compose( # 통합 클래스
+# transform = transforms.Compose( # 통합 클래스
 #     [
 #         transforms.Resize(size=(512,512)), # 512 X 512 크기로 변환
 #         transforms.ToTensor() # 텐서 타입으로 변환(PIL.Image => Tensor)
@@ -232,7 +232,7 @@
 # )
 
 # image = Image.open('C:\\Users\\rlaxo\\Desktop\\datasets\\images\\cat.jpg')
-# transformed_image = transforms(image)
+# transformed_image = transform(image)
 
 # print(transformed_image.shape) #torch.Size([3, 512, 512])
 
@@ -244,7 +244,7 @@
 # from PIL import Image
 # from torchvision import transforms
 
-# transforms = transforms.Compose( 
+# transform = transforms.Compose( 
 #     [
 #         transforms.RandomRotation(degrees = 30, expand = False, center = None), # expand = True : 회전시 생기는 여백이 생성되지 않는다. # center를 입력하지 않으면 왼쪽 상단을 기준으로 회전
 #         transforms.RandomHorizontalFlip(p=0.5), #50% 확률로 대칭 수행 수평선 기준
@@ -253,9 +253,32 @@
 # )
 
 # image = Image.open('C:\\Users\\rlaxo\\Desktop\\datasets\\images\\cat.jpg')
-# transformed_image = transforms(image)
+# transformed_image = transform(image)
 
 # transformed_image.show()
 
 # 이미지를 -30~30(degree) 사이로 회전시키면서 수평 대칭과 수직 대칭을 50% 확률로 적용.
+
+
+### 자르기 및 패딩
+# 객체 인식과 같은 모델 구성시 학습 데이터의 크기가 일정하지 않거나, 주요한 객체가 일부 영역에만 작게 존재할 수 있다.
+# 이런 경우 객체가 존재하는 위치로 이미지를 잘라 불필요한 특징을 감소시키거나 패딩을 주어 이미지 크기를 동일한 크기로 맞출 수 있따.
+
+# from PIL import Image
+# from torchvision import transforms
+
+# transform = transforms.Compose( 
+#     [
+#         transforms.RandomCrop(size=(512,512)), # 512 X 512 사이즈로 이미지 자르기
+#         transforms.Pad(padding=50, fill=(127,127,255),padding_mode="constant") # padding, 이미지를 확장, padding = 50 : 50만큼 확장, 패딩은 모든 방향으로 적용, 612 X 612 크기로 변환
+#         # 패딩 : 이미지에 경계를 덧대는 방식, 본래의 이미지 크기 유지 가능
+#         # padding_mode = "constant" fill(127,127,255) , RGB(127,127,255)로 테두리가 생성됨.
+#     ]
+# )
+
+# image = Image.open('C:\\Users\\rlaxo\\Desktop\\datasets\\images\\cat.jpg')
+# transformed_image = transform(image)
+
+# transformed_image.show()
+
 
