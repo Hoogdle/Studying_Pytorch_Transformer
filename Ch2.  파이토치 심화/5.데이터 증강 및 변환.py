@@ -223,7 +223,7 @@
 # from PIL import Image
 # from torchvision import transforms
 
-# transform = transforms.Compose( # 통합 클래스
+# transform = transforms.Compose( # 통합 클래스 #여러 모델의 매개변수를 묶어주는 Sequential과 동일한 역할
 #     [
 #         transforms.Resize(size=(512,512)), # 512 X 512 크기로 변환
 #         transforms.ToTensor() # 텐서 타입으로 변환(PIL.Image => Tensor)
@@ -282,3 +282,189 @@
 # transformed_image.show()
 
 
+### 크기 조정
+# 학습을 원활하게 진행하기 위해서는 이미지의 크기가 모두 일정해야 한다.
+# from PIL import Image
+# from torchvision import transforms
+
+# transform = transforms.Compose( 
+#     [
+#         transforms.Resize(size=(512,512))
+#     ]
+# )
+
+# image = Image.open('C:\\Users\\rlaxo\\Desktop\\datasets\\images\\cat.jpg')
+# transformed_image = transform(image)
+
+# transformed_image.show()
+
+
+### 변형
+# 기하학적 변환을 통해 이미지를 변경
+# 기하학적 변환 : 인위적인 확대,축소,위치 변경, 회전, 왜곡으로 이미지의 형태를 변환, 아핀 변환과 원근 변환으로 나뉨
+# 아핀 변환 : 2 X 3 행렬을 사용하여 행렬 곱셈에 벡터 합을 활용해 표현할 수 있는 변환
+# 원근 변환 : 3 X 3 행렬을 사용, 호모그래피로 모델링할 수 있는 변환
+
+# 아핀 변환
+# 각도(degree),이동(translate),척도(scale),전단(shear)을 입력해 이미지를 변형.
+# from PIL import Image
+# from torchvision import transforms
+
+# transform = transforms.Compose( 
+#     [
+#         transforms.RandomAffine(
+#             degrees=15, translate=(0.2,0.2),
+#             scale=(0.8,1.2),shear=15
+#         )
+#     ]
+# )
+
+# image = Image.open('C:\\Users\\rlaxo\\Desktop\\datasets\\images\\cat.jpg')
+# transformed_image = transform(image)
+
+# transformed_image.show()
+
+
+# 색상 변환
+# 이미지 데이터의 특징은 픽셀값의 분포나 패턴에 크게 좌우된다.
+# 이미지를 분석할 때 특정 색상에 편향되지 않도록 픽셀값을 변환하거나 정규화하면 모델을 더 일반화해 분석 성능을 향상시킬 수 있따.
+
+# 색상 변환 및 정규화
+# from PIL import Image
+# from torchvision import transforms
+
+# transform = transforms.Compose( 
+#     [
+#         transforms.ColorJitter( # 색상 변환 클래스, 밝기(brightness),대비(contrast),채도(saturation),색상(hue)를 변환
+#             brightness=0.3,contrast=0.3,
+#             saturation=0.3,hue=0.3
+#         ),
+#         transforms.ToTensor(), # 정규화 클래스는 PIL.Image 형식이 아닌 Tensor 형식으로 입력을 받는다.
+#         transforms.Normalize( # 픽셀의 평균과 표준펴차를 활용해 정규화, 데이터를 정규화해 모델 성능을 높임.
+#             mean=[0.485,0.456,0.406],
+#             std=[0.229,0.224,0.225]
+#         ),
+#         transforms.ToPILImage()
+
+#     ]
+# )
+
+# image = Image.open('C:\\Users\\rlaxo\\Desktop\\datasets\\images\\cat.jpg')
+# transformed_image = transform(image)
+
+# transformed_image.show()
+
+
+
+
+### 노이즈
+# 이미지 처리 모델은 주로 합성곱 연산을 통해 학습을 진행.
+# 노이즈 추가는 특정 픽셀값에 편향되지 않도록 임의의 노이즈를 추가해 모델의 일반화 능력을 높이는데 사용된다.
+# 학습 데이터에 직접 포함하지 않더라도 테스트 데이터에 노이즈를 추가해 일반화 능력이나 강건성을 평가하는데 사용된다.
+# import numpy as np
+# from PIL import Image
+# from torchvision import transforms
+# from imgaug import augmenters as iaa # 이미지 증강 클래스 사용
+
+# class IaaTransforms:
+#     def __init__(self): # 이미지 증강 방법 설정
+#         self.seq = iaa.Sequential([
+#             iaa.SaltAndPepper(p=(0.03,0.07)), #점잡음 적용
+#             iaa.Rain(speed=(0.3,0.7)) #빗방울 레이어 적용
+#         ])
+# #__call__, 클래스의 인스턴스를 함수처럼 호출 가능하게 만들어줌.
+# # class Test:
+# #     def __call__(self, x):
+# #         return x**2
+ 
+# # T = Test()
+# # print(T(5))  # 출력: 25
+#     def __call__(self,images): 
+#         images = np.array(images) # 이미지 증강 라이브러리의 증강 클래스는 넘파이의 ndarray 클래스를 입력과 출력으로 사용
+#         augmented = self.seq.augment_image(images)
+#         return Image.fromarray(augmented) # ndarray를 다시 PIL Image 형식으로 변환
+    
+# transform = transforms.Compose([
+#     IaaTransforms()
+# ])
+
+# image = Image.open('C:\\Users\\rlaxo\\Desktop\\datasets\\images\\cat.jpg')
+# transformed_image = transform(image)
+
+# transformed_image.show()
+
+
+### 컷아웃 및 무작위 지우기 
+# 컷아웃 : 이미지에서 임의의 사각형 영역을 삭제하고 0의 픽셀값으로 채우는 방법
+# 무작위 지우기 : 이미지에서 임의의 사각혀 영역을 삭제하고 무작위 픽셀값으로 채우는 방법
+# 컷아웃은 동영상에서 폐색 영역에 대해 모델을 더 강건하게 만들어주고 무작위 지우기는 일부 영역이 누락되었을 때 더 강건한 모델을 만들 수 있게함.
+# 즉, 이미지의 객체 일부가 누락되더라도 모델을 견고하게 만드는 증강 방법
+
+# 무작위 지우기
+# from PIL import Image
+# from torchvision import transforms
+
+# transform = transforms.Compose( 
+#     [
+#         transforms.ToTensor(),
+#         transforms.RandomErasing(p=1.0,value=0), #컷아웃 #지우는 확률 100퍼
+#         transforms.RandomErasing(p=1.0,value="random"), #무작위 지우기 #지우는 확률 100퍼
+#         transforms.ToPILImage()
+#     ]
+# )
+
+# image = Image.open('C:\\Users\\rlaxo\\Desktop\\datasets\\images\\cat.jpg')
+# transformed_image = transform(image)
+
+# transformed_image.show()
+
+
+### 혼합 및 컷믹스
+# 혼합 : 두 개 이상의 이미지를 혼합(Blending)해 새로운 이미지를 생성하는 방법, 픽셀 값을 선형으로 결합해 새 이미지 생성
+# 생성된 이미지는 두 개의 이미지가 겹쳐 흐릿한 형상을 지님
+# 혼합된 데이터로 학습시 레이블링이 다르게 태깅돼 있어어도 더 낮은 오류를 보이며, 다중 레이블 문제(하나의 객체가 두 개 이상의 클래스에 포함되는 것)에도 견고한 모델을 만들 수 있다.
+
+# 컷믹스 : 이미지 패치 영역에 다른 이미지를 덮어씌우는 방법.
+# 패치 위에 새로운 패치를 덮어씌워 비교적 자연스러운 이미지를 구성한다.
+# 특정 영역을 기억해 인식하는 문제를 완화하며, 이미지 전체를 보고 판단할 수 있게 일반화 할 수 있다.
+ 
+# 혼합은 이미지 크기만 맞다면 쉽게 가능하지만, 컷믹스는 패치 영역의 크기와 비율을 고려해 덮어씌워야 한다.
+
+### 혼합
+# import numpy as np
+# from PIL import Image
+# from torchvision import transforms
+
+# class Mixup:
+#     def __init__(self,target,scale,alpha=0.5,beta=0.5): # target : 혼합하려는 이미지, scale : 이미지 크기 조절, alpha,beta : 혼합 비율 설정
+#         self.target = target
+#         self.scale = scale
+#         self.alpha = alpha
+#         self.beta = beta
+#     def __call__(self,image):
+#         image = np.array(image)
+#         target = self.target.resize(self.scale)
+#         target = np.array(target)
+#         mix_image = image * self.alpha + target * self.beta
+#         return Image.fromarray(mix_image.astype(np.uint8))
+    
+# transform = transforms.Compose(
+#     [
+#         transforms.Resize((512,512)),
+#         Mixup(
+#             target = Image.open('C:\\Users\\rlaxo\\Desktop\\datasets\\images\\dog.jpg'),
+#             scale = (512,512),
+#             alpha = 0.5,
+#             beta = 0.5
+#         )
+#     ]
+# )
+
+# image = Image.open('C:\\Users\\rlaxo\\Desktop\\datasets\\images\\cat.jpg')
+# transformed_image = transform(image)
+
+# transformed_image.show()
+
+
+# 텍스트 및 이미지 증강 방법은 모든 데이터에 적용하는 것이 아닌, 일부 데이터에만 적용해 증강한다.
+# 데이터 증강은 모델 학습에 있어서 보편적으로 사용되는 방법, 부족한 데이터를 확보하고 모델의 일반화 성능을 최대로 끌어올릴 수 있다.
