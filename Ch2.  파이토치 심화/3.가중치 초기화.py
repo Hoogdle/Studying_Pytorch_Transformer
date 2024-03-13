@@ -68,9 +68,9 @@ class Net(nn.Module):
         )
 
         self.fc = nn.Linear(2,1)
-        self.apply(self._init_weights) #가중치 초기화 메서드를 범용적으로 변경 #텐서의 각 요소에 임의의 함수 적용하여 새로운 텐서 반환
+        self.apply(self._init_weights) # self.apply(함수)로 해당 함수를 객체의 모든 모듈(Linear,Sigmoid)에 적용
 
-    def _init_weights(self,module): #moduel == 초기화 메서드에서 선언한 모델의 매개변수 #다른 이름으로 사용해도 상관 없음  #모든 계층에서의 파라미터를 각각 초기화
+    def _init_weights(self,module): #moduel == 초기화 메서드에서 선언한 모델의 매개변수, apply에서 객체의 모든 모듈을 받아옴, 각각의 모듈이 이 함수의 매개변수로 됨
         if isinstance(module,nn.Linear):
             nn.init.xavier_uniform_(module.weight)
             nn.init.constant_(module.bias,0.01)
